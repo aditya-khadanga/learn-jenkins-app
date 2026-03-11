@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -19,12 +20,14 @@ pipeline {
                     ls -la
                 '''
             }
-        stage('Test') {
+        } // close Build stage
+
+        stage('test') {
             steps {
                 echo 'test stage'
                 sh 'test -f build/index.html'
             }
         }
-    }
-}
-}
+    } // close stages
+} // close pipeline
+```
