@@ -1,4 +1,4 @@
-```groovy
+
 pipeline {
     agent any
 
@@ -30,4 +30,3 @@ pipeline {
         }
     } // close stages
 } // close pipeline
-```
