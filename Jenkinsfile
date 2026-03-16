@@ -10,14 +10,18 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
+                                sh '''
+                ls -la
+                node --version
+                npm --version
                     npm ci
-                    npm run build
+                    if npm run | grep -q " build"; then
+                        npm run build
+                    else
+                        echo "No build script found in package.json, skipping build step."
+                    fi
                     ls -la
-                '''
+                                '''
             }
         }
     }
