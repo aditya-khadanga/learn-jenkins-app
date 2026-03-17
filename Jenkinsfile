@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     stages {
+        /*
+
         stage('Build') {
             agent {
                 docker {
@@ -20,26 +22,46 @@ pipeline {
                 '''
             }
         }
-        stage('E2E') {
+        */
+
+        stage('Test') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.58.2-noble'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
+
             steps {
                 sh '''
-                npx serve -s build &
-                SERVER_PID=$!
-                npx playwright test
-                KILL $SERVER_PID
+                    #test -f build/index.html
+                    npm test
+                '''
+            }
+        }
+
+        stage('E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+
+            steps {
+                sh '''
+                    npm install serve
+                    node_modules/.bin/serve -s build &
+                    sleep 10
+                    npx playwright test
                 '''
             }
         }
     }
+
     post {
         always {
-            junit 'test-results/junit.xml'
+            junit 'jest-results/junit.xml'
         }
     }
 }
