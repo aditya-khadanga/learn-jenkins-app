@@ -29,9 +29,10 @@ pipeline {
             }
             steps {
                 sh '''
-                npm install -g serve
-                npx serve -s build
+                npx serve -s build &
+                SERVER_PID`=$!
                 npx playwright test
+                KILL $SERVER_PID
                 '''
             }
         }
