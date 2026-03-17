@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh '''
                 npx serve -s build &
-                SERVER_PID`=$!
+                SERVER_PID=$!
                 npx playwright test
                 KILL $SERVER_PID
                 '''
