@@ -2,24 +2,50 @@ pipeline {
     agent any
 
     stages {
-        stage('Parallel Demo') {
+
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
+            }
+        }
+
+        stage('Tests') {
             parallel {
+                stage('Unit tests') {
+                    agent {
+                        docker {
+                            image 'node:18-alpine'
+                            reuseNode true
+                        }
+                    }
 
-                stage('Job A1') {
                     steps {
-                        echo "Hello from Job A1"
-                        echo "Job A1 is running in parallel"
+                        sh '''
+                            #test -f build/index.html
+                            npm test
+                        '''
+                    }
+                    post {
+                        always {
+                            junit 'test-results/junit.xml'
+                        }
                     }
                 }
-
-                stage('Job B1') {
-                    steps {
-                        echo "Hello from Job B1"
-                        echo "Job B is also running in parallel"
-                    }
-                }
-
             }
         }
     }
 }
+
